@@ -1,0 +1,45 @@
+.metaballs-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.metaballs-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: auto;
+  opacity: 0.4;
+  mix-blend-mode: screen;
+  filter: blur(0.5px);
+}
+
+/* Ensure content stays above metaballs */
+.metaballs-container ~ * {
+  position: relative;
+  z-index: 10;
+}
+
+/* Additional styling for better integration */
+@media (prefers-reduced-motion: reduce) {
+  .metaballs-container canvas {
+    opacity: 0.1;
+    animation: none;
+  }
+}
+
+/* Better visibility on dark backgrounds */
+body {
+  background: #1A1A1A;
+}
+
+.metaballs-container canvas {
+  background: transparent;
+}

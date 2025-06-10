@@ -1,43 +1,55 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import MetaBalls from './components/MetaBalls';
 import Home from './pages/Home';
-import About from './pages/About';
-import Projects from './pages/Projects';
-import Team from './pages/Team';
-import Sponsors from './pages/Sponsors';
-import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
-import MetaballBackground from './components/MetaballBackground';
 
 function App() {
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-primary-black text-white font-poppins relative">
-        <MetaballBackground />
+    <Router>
+      <div className="min-h-screen bg-charcoal-800 font-poppins relative">
+        {/* MetaBalls Background Effect */}
+        <MetaBalls
+          color="#F9C416"
+          cursorBallColor="#FFD700"
+          cursorBallSize={3}
+          ballCount={15}
+          animationSize={40}
+          enableMouseInteraction={true}
+          enableTransparency={true}
+          hoverSmoothness={0.1}
+          clumpFactor={1.2}
+          speed={0.4}
+        />
+        
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/team" element={<Team />} />
-          <Route path="/sponsors" element={<Sponsors />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
+        <motion.main
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="relative z-20"
+        >
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+        </motion.main>
+        <Footer />
       </div>
-    </AuthProvider>
+    </Router>
   );
 }
 

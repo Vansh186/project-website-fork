@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, Eye, EyeOff, Zap } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { Eye, EyeOff, Users } from 'lucide-react';
+import Cookies from 'js-cookie';
+import BlobButton from '../components/BlobButton';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (error) setError('');
+  // Demo credentials
+  const demoCredentials = {
+    email: 'admin@enactusbitspilani.com',
+    password: 'enactus2024'
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,67 +23,80 @@ const Login: React.FC = () => {
     setIsLoading(true);
     setError('');
 
-    try {
-      const success = await login(formData.email, formData.password);
-      if (success) {
+    // Simulate API call delay
+    setTimeout(() => {
+      if (formData.email === demoCredentials.email && formData.password === demoCredentials.password) {
+        // Generate a mock JWT token
+        const mockToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJlbmFjdHVzIiwiaWF0IjoxNzM0MDU2NDAwLCJleHAiOjE3MzQwNjAwMDAsImF1ZCI6ImVuYWN0dXNiaXRzcGlsYW5pLmNvbSIsInN1YiI6ImFkbWluIn0';
+        Cookies.set('token', mockToken, { expires: 7 });
         navigate('/dashboard');
       } else {
-        setError('Invalid email or password');
+        setError('Invalid email or password. Please use demo credentials.');
       }
-    } catch (err) {
-      setError('Login failed. Please try again.');
-    } finally {
       setIsLoading(false);
-    }
+    }, 1000);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 relative z-10 flex items-center justify-center">
-      <div className="max-w-md w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="bg-gradient-to-br from-primary-dark-gray to-primary-light-gray rounded-2xl p-8 glow-gold"
-        >
+    <div className="min-h-screen flex items-center justify-center px-4 pt-20 relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-md w-full"
+      >
+        <div className="bg-charcoal-700/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-charcoal-600">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <div className="relative">
-                <Zap className="w-12 h-12 text-primary-gold" />
-                <div className="absolute inset-0 bg-primary-gold opacity-20 blur-md" />
-              </div>
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-            <p className="text-gray-300">Sign in to access your dashboard</p>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 260, damping: 20 }}
+              className="mx-auto w-16 h-16 bg-gold-gradient rounded-full flex items-center justify-center mb-4"
+            >
+              <Users className="h-8 w-8 text-charcoal-800" />
+            </motion.div>
+            <h2 className="text-2xl font-bold text-white mb-2">Welcome Back</h2>
+            <p className="text-gray-400">Sign in to access your dashboard</p>
           </div>
 
-          {/* Demo Credentials */}
-          <div className="mb-6 p-4 bg-primary-gold/10 border border-primary-gold/20 rounded-lg">
-            <p className="text-sm text-primary-gold font-semibold mb-2">Demo Credentials:</p>
-            <p className="text-xs text-gray-300">Email: admin@enactus.org</p>
-            <p className="text-xs text-gray-300">Password: password</p>
+          {/* Demo Credentials Info */}
+          <div className="bg-charcoal-600/80 backdrop-blur-sm rounded-lg p-4 mb-6 border-l-4 border-gold-500">
+            <h4 className="text-gold-500 font-semibold mb-2">Demo Credentials:</h4>
+            <p className="text-sm text-gray-300">Email: admin@enactusbitspilani.com</p>
+            <p className="text-sm text-gray-300">Password: enactus2024</p>
           </div>
 
-          {/* Login Form */}
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-red-500/10 border border-red-500/50 rounded-lg p-3"
+              >
+                <p className="text-red-400 text-sm">{error}</p>
+              </motion.div>
+            )}
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full pl-10 pr-4 py-3 bg-primary-black text-white rounded-lg border border-primary-light-gray focus:border-primary-gold focus:outline-none transition-colors"
-                  placeholder="Enter your email"
-                />
-              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-charcoal-600/80 backdrop-blur-sm border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all duration-300"
+                placeholder="Enter your email"
+              />
             </div>
 
             <div>
@@ -92,73 +104,50 @@ const Login: React.FC = () => {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
                   required
-                  className="w-full pl-10 pr-12 py-3 bg-primary-black text-white rounded-lg border border-primary-light-gray focus:border-primary-gold focus:outline-none transition-colors"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-charcoal-600/80 backdrop-blur-sm border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all duration-300 pr-12"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary-gold transition-colors"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gold-500 transition-colors duration-300"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
             </div>
 
-            {error && (
-              <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm text-center">
-                {error}
-              </div>
-            )}
-
-            <button
+            <BlobButton
               type="submit"
-              disabled={isLoading}
-              className="w-full btn-metallic px-6 py-3 rounded-lg font-semibold text-primary-black hover:scale-105 transition-transform disabled:opacity-50 disabled:scale-100 flex items-center justify-center"
+              className="w-full"
+              variant="primary"
             >
               {isLoading ? (
-                <div className="loading-spinner mr-2" />
-              ) : null}
-              {isLoading ? 'Signing In...' : 'Sign In'}
-            </button>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-5 h-5 border-2 border-charcoal-800 border-t-transparent rounded-full mx-auto"
+                />
+              ) : (
+                'Sign In'
+              )}
+            </BlobButton>
           </form>
 
-          {/* Footer */}
-          <div className="mt-8 text-center">
+          <div className="text-center mt-6">
             <p className="text-gray-400 text-sm">
-              For demo purposes only. In production, this would connect to a secure authentication system.
+              Don't have an account? Contact the administrator.
             </p>
           </div>
-        </motion.div>
-
-        {/* Features */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4"
-        >
-          {[
-            { icon: '🔒', title: 'Secure Access', desc: 'JWT-based authentication' },
-            { icon: '📊', title: 'Dashboard', desc: 'Project management tools' },
-            { icon: '👥', title: 'Team Collaboration', desc: 'Work with your team' }
-          ].map((feature, index) => (
-            <div key={index} className="text-center p-4 bg-primary-dark-gray/50 rounded-lg">
-              <div className="text-2xl mb-2">{feature.icon}</div>
-              <h3 className="text-sm font-semibold text-primary-gold mb-1">{feature.title}</h3>
-              <p className="text-xs text-gray-400">{feature.desc}</p>
-            </div>
-          ))}
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </div>
   );
 };
