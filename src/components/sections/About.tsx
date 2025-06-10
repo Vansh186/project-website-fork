@@ -38,7 +38,7 @@ const About: React.FC = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            About <span className="text-gold-500">Enactus</span>
+            About <span className="bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent">Enactus</span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Enactus is a global organization that brings together student, academic, and business 
@@ -59,7 +59,7 @@ const About: React.FC = () => {
               className="text-center group"
             >
               <motion.div
-                className="w-16 h-16 mx-auto mb-6 bg-gold-gradient rounded-2xl flex items-center justify-center group-hover:shadow-gold-glow transition-all duration-300"
+                className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-yellow-400 to-blue-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-300"
                 whileHover={{ scale: 1.1, rotate: 5 }}
               >
                 <value.icon className="h-8 w-8 text-charcoal-800" />
@@ -82,7 +82,7 @@ const About: React.FC = () => {
             <div>
               <h3 className="text-3xl font-bold text-white mb-6">Our Story at BITS Pilani</h3>
               <p className="text-gray-300 leading-relaxed mb-6">
-                Founded in [Year], Enactus BITS Pilani has been at the forefront of social 
+                Founded in 2018, Enactus BITS Pilani has been at the forefront of social 
                 entrepreneurship and community development. Our team consists of passionate 
                 students from diverse backgrounds, united by a common goal of creating positive change.
               </p>
@@ -93,28 +93,28 @@ const About: React.FC = () => {
               </p>
               <div className="flex items-center space-x-8">
                 <div>
-                  <div className="text-2xl font-bold text-gold-500">5+</div>
+                  <div className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent">6+</div>
                   <div className="text-gray-400">Years Active</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gold-500">15+</div>
+                  <div className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent">15+</div>
                   <div className="text-gray-400">Awards Won</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gold-500">1000+</div>
+                  <div className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent">1000+</div>
                   <div className="text-gray-400">Lives Touched</div>
                 </div>
               </div>
             </div>
             <div className="relative">
               <motion.div
-                className="w-full h-80 bg-gradient-to-br from-gold-500/20 to-charcoal-500/20 rounded-2xl"
+                className="w-full h-80 bg-gradient-to-br from-yellow-400/20 to-blue-500/20 rounded-2xl"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-gold-500/10 to-transparent rounded-2xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-transparent rounded-2xl"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-6xl font-bold text-gold-500/30">ENACTUS</div>
+                  <div className="text-6xl font-bold bg-gradient-to-r from-yellow-400/30 to-blue-500/30 bg-clip-text text-transparent">ENACTUS</div>
                 </div>
               </motion.div>
             </div>

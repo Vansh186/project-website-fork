@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Clock } from 'lucide-react';
-import BlobButton from '../BlobButton';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -71,7 +70,7 @@ const Contact: React.FC = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Get In <span className="text-gold-500">Touch</span>
+            Get In <span className="bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent">Touch</span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Have questions about our work or want to collaborate with us? We'd love to hear from you. 
@@ -113,7 +112,7 @@ const Contact: React.FC = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-charcoal-700 border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 bg-charcoal-700 border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
                     placeholder="Your name"
                   />
                 </div>
@@ -128,7 +127,7 @@ const Contact: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-charcoal-700 border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 bg-charcoal-700 border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -145,7 +144,7 @@ const Contact: React.FC = () => {
                   required
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-charcoal-700 border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all duration-300"
+                  className="w-full px-4 py-3 bg-charcoal-700 border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
                   placeholder="What's this about?"
                 />
               </div>
@@ -161,15 +160,16 @@ const Contact: React.FC = () => {
                   rows={5}
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-charcoal-700 border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 bg-charcoal-700 border border-charcoal-500 rounded-lg text-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300 resize-none"
                   placeholder="Tell us more about your inquiry..."
                 />
               </div>
 
-              <BlobButton
+              <motion.button
                 type="submit"
-                className="w-full"
-                variant="primary"
+                className="w-full bg-gradient-to-r from-yellow-400 to-blue-500 text-charcoal-800 py-3 px-6 rounded-lg font-semibold hover:scale-105 transition-all duration-300 inline-flex items-center justify-center"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {isSubmitting ? (
                   <motion.div
@@ -183,7 +183,7 @@ const Contact: React.FC = () => {
                     <Send className="ml-2 h-5 w-5" />
                   </>
                 )}
-              </BlobButton>
+              </motion.button>
             </form>
           </motion.div>
 
@@ -202,16 +202,16 @@ const Contact: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="flex items-start space-x-4 p-6 bg-charcoal-600 rounded-xl border border-charcoal-500 hover:border-gold-500/50 transition-all duration-300"
+                className="flex items-start space-x-4 p-6 bg-charcoal-600 rounded-xl border border-charcoal-500 hover:border-yellow-400/50 transition-all duration-300"
               >
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-gold-gradient rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-blue-500 rounded-lg flex items-center justify-center">
                     <info.icon className="h-6 w-6 text-charcoal-800" />
                   </div>
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-white mb-1">{info.title}</h4>
-                  <p className="text-gold-500 mb-1">{info.details}</p>
+                  <p className="bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent mb-1">{info.details}</p>
                   <p className="text-gray-400 text-sm">{info.subtitle}</p>
                 </div>
               </motion.div>
@@ -226,7 +226,7 @@ const Contact: React.FC = () => {
               className="h-64 bg-charcoal-600 rounded-xl border border-charcoal-500 flex items-center justify-center"
             >
               <div className="text-center">
-                <MapPin className="h-12 w-12 text-gold-500 mx-auto mb-2" />
+                <MapPin className="h-12 w-12 text-yellow-400 mx-auto mb-2" />
                 <p className="text-white font-medium">Interactive Map</p>
                 <p className="text-gray-400 text-sm">BITS Pilani Campus Location</p>
               </div>

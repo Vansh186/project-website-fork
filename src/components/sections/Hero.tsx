@@ -1,15 +1,21 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Play } from 'lucide-react';
-import BlobButton from '../BlobButton';
 
 const Hero: React.FC = () => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
         <motion.div
-          className="absolute top-1/4 left-1/4 w-64 h-64 bg-gold-500/10 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-64 h-64 bg-yellow-400/10 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.6, 0.3],
@@ -21,7 +27,7 @@ const Hero: React.FC = () => {
           }}
         />
         <motion.div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl"
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"
           animate={{
             scale: [1.2, 1, 1.2],
             opacity: [0.2, 0.4, 0.2],
@@ -44,7 +50,7 @@ const Hero: React.FC = () => {
             className="text-5xl md:text-7xl font-bold text-white mb-6"
           >
             Empowering Through
-            <span className="bg-gold-gradient bg-clip-text text-transparent block">
+            <span className="bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent block">
               Entrepreneurial Action
             </span>
           </motion.h1>
@@ -66,15 +72,25 @@ const Hero: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
-            <BlobButton variant="primary">
+            <motion.button
+              onClick={() => scrollToSection('about')}
+              className="bg-gradient-to-r from-yellow-400 to-blue-500 text-charcoal-800 px-8 py-4 rounded-full font-semibold hover:scale-105 transition-all duration-300 inline-flex items-center"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               Join Our Mission
               <ArrowRight className="ml-2 h-5 w-5" />
-            </BlobButton>
+            </motion.button>
             
-            <BlobButton variant="secondary">
+            <motion.button
+              onClick={() => scrollToSection('projects')}
+              className="bg-transparent border-2 border-gradient-to-r from-yellow-400 to-blue-500 text-white px-8 py-4 rounded-full font-semibold hover:bg-gradient-to-r hover:from-yellow-400 hover:to-blue-500 hover:text-charcoal-800 transition-all duration-300 inline-flex items-center"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Play className="mr-2 h-5 w-5" />
               Watch Our Story
-            </BlobButton>
+            </motion.button>
           </motion.div>
 
           {/* Stats */}
@@ -95,7 +111,7 @@ const Hero: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                <div className="text-3xl md:text-4xl font-bold text-gold-500 mb-2">
+                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent mb-2">
                   {stat.number}
                 </div>
                 <div className="text-gray-300">{stat.label}</div>
@@ -111,8 +127,8 @@ const Hero: React.FC = () => {
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <div className="w-6 h-10 border-2 border-gold-500 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-gold-500 rounded-full mt-2"></div>
+        <div className="w-6 h-10 border-2 border-yellow-400 rounded-full flex justify-center">
+          <div className="w-1 h-3 bg-gradient-to-b from-yellow-400 to-blue-500 rounded-full mt-2"></div>
         </div>
       </motion.div>
     </section>

@@ -32,12 +32,21 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsOpen(false);
+  };
+
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Team', href: '#team' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Home', href: '#home', action: () => scrollToSection('home') },
+    { name: 'About', href: '#about', action: () => scrollToSection('about') },
+    { name: 'Projects', href: '#projects', action: () => scrollToSection('projects') },
+    { name: 'Team', href: '#team', action: () => scrollToSection('team') },
+    { name: 'Partners', href: '#partners', action: () => scrollToSection('partners') },
+    { name: 'Contact', href: '#contact', action: () => scrollToSection('contact') },
   ];
 
   return (
@@ -53,30 +62,30 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <Users className="h-8 w-8 text-gold-500" />
+            <Users className="h-8 w-8 text-yellow-400" />
             <span className="text-xl font-bold text-white">
-              Enactus <span className="text-gold-500">BITS Pilani</span>
+              Enactus <span className="bg-gradient-to-r from-yellow-400 to-blue-500 bg-clip-text text-transparent">BITS Pilani</span>
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <a
+              <button
                 key={link.name}
-                href={link.href}
-                className="text-white hover:text-gold-500 transition-colors duration-300 relative group"
+                onClick={link.action}
+                className="text-white hover:text-yellow-400 transition-colors duration-300 relative group"
               >
                 {link.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gold-500 group-hover:w-full transition-all duration-300"></span>
-              </a>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-blue-500 group-hover:w-full transition-all duration-300"></span>
+              </button>
             ))}
             
             {isLoggedIn ? (
               <div className="flex items-center space-x-4">
                 <Link
                   to="/dashboard"
-                  className="text-gold-500 hover:text-gold-400 transition-colors duration-300"
+                  className="text-yellow-400 hover:text-blue-400 transition-colors duration-300"
                 >
                   Dashboard
                 </Link>
@@ -90,7 +99,7 @@ const Navbar: React.FC = () => {
             ) : (
               <Link
                 to="/login"
-                className="bg-gold-gradient text-charcoal-800 px-6 py-2 rounded-full font-semibold hover:shadow-gold-glow transition-all duration-300"
+                className="bg-gradient-to-r from-yellow-400 to-blue-500 text-charcoal-800 px-6 py-2 rounded-full font-semibold hover:scale-105 transition-all duration-300"
               >
                 Login
               </Link>
@@ -101,7 +110,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white hover:text-gold-500 transition-colors duration-300"
+              className="text-white hover:text-yellow-400 transition-colors duration-300"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -117,20 +126,19 @@ const Navbar: React.FC = () => {
             className="md:hidden bg-charcoal-700/95 backdrop-blur-md rounded-lg mt-2 p-4"
           >
             {navLinks.map((link) => (
-              <a
+              <button
                 key={link.name}
-                href={link.href}
-                className="block text-white hover:text-gold-500 py-2 transition-colors duration-300"
-                onClick={() => setIsOpen(false)}
+                onClick={link.action}
+                className="block w-full text-left text-white hover:text-yellow-400 py-2 transition-colors duration-300"
               >
                 {link.name}
-              </a>
+              </button>
             ))}
             {isLoggedIn ? (
               <div className="space-y-2 pt-2 border-t border-charcoal-600">
                 <Link
                   to="/dashboard"
-                  className="block text-gold-500 hover:text-gold-400 py-2 transition-colors duration-300"
+                  className="block text-yellow-400 hover:text-blue-400 py-2 transition-colors duration-300"
                   onClick={() => setIsOpen(false)}
                 >
                   Dashboard
@@ -148,7 +156,7 @@ const Navbar: React.FC = () => {
             ) : (
               <Link
                 to="/login"
-                className="block bg-gold-gradient text-charcoal-800 px-4 py-2 rounded-full font-semibold text-center mt-4"
+                className="block bg-gradient-to-r from-yellow-400 to-blue-500 text-charcoal-800 px-4 py-2 rounded-full font-semibold text-center mt-4"
                 onClick={() => setIsOpen(false)}
               >
                 Login

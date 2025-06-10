@@ -10,25 +10,34 @@ export default {
           700: '#2A2A2A',
           600: '#3A3A3A',
           500: '#4A4A4A',
-        },
-        gold: {
-          500: '#F9C416',
-          400: '#FFD700',
-          300: '#D4AF37',
-          200: '#E6C86F',
-          100: '#F5E1A7',
         }
       },
       fontFamily: {
         'poppins': ['Poppins', 'sans-serif'],
       },
       backgroundImage: {
-        'gold-gradient': 'linear-gradient(135deg, #F9C416 0%, #D4AF37 100%)',
-        'charcoal-gradient': 'linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%)',
+        'gradient-to-r': 'linear-gradient(to right, var(--tw-gradient-stops))',
+        'gradient-to-br': 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
+        'gradient-to-b': 'linear-gradient(to bottom, var(--tw-gradient-stops))',
       },
-      boxShadow: {
-        'gold-glow': '0 0 20px rgba(249, 196, 22, 0.5)',
-        'gold-glow-lg': '0 0 40px rgba(249, 196, 22, 0.3)',
+      animation: {
+        'falling': 'falling 5s infinite ease-in-out',
+        'falling2': 'falling2 5s infinite ease-in-out',
+        'falling3': 'falling3 5s infinite ease-in-out',
+      },
+      keyframes: {
+        falling: {
+          '0%': { transform: 'translate3d(300px, 0, 0) rotate(0deg)' },
+          '100%': { transform: 'translate3d(-350px, 700px, 0) rotate(90deg)', opacity: '0' }
+        },
+        falling2: {
+          '0%': { transform: 'translate3d(0, 0, 0) rotate(90deg)' },
+          '100%': { transform: 'translate3d(-400px, 680px, 0) rotate(0deg)', opacity: '0' }
+        },
+        falling3: {
+          '0%': { transform: 'translate3d(0, 0, 0) rotate(-20deg)' },
+          '100%': { transform: 'translate3d(-230px, 640px, 0) rotate(-70deg)', opacity: '0' }
+        }
       }
     },
   },
