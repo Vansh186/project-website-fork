@@ -13,18 +13,18 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-charcoal-800 font-poppins relative">
-        {/* MetaBalls Background Effect */}
+        {/* Enhanced MetaBalls Background Effect */}
         <MetaBalls
           color="#F9C416"
           cursorBallColor="#FFD700"
-          cursorBallSize={3}
-          ballCount={15}
-          animationSize={40}
+          cursorBallSize={4}
+          ballCount={25}
+          animationSize={50}
           enableMouseInteraction={true}
           enableTransparency={true}
-          hoverSmoothness={0.1}
-          clumpFactor={1.2}
-          speed={0.4}
+          hoverSmoothness={0.15}
+          clumpFactor={1.5}
+          speed={0.3}
         />
         
         <Navbar />

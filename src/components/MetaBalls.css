@@ -16,9 +16,9 @@
   width: 100% !important;
   height: 100% !important;
   pointer-events: auto;
-  opacity: 0.4;
+  opacity: 0.6;
   mix-blend-mode: screen;
-  filter: blur(0.5px);
+  filter: blur(0.3px);
 }
 
 /* Ensure content stays above metaballs */
@@ -27,19 +27,44 @@
   z-index: 10;
 }
 
-/* Additional styling for better integration */
+/* Enhanced visibility and interaction */
+@media (hover: hover) {
+  .metaballs-container canvas {
+    opacity: 0.7;
+  }
+}
+
+/* Better performance on mobile */
+@media (max-width: 768px) {
+  .metaballs-container canvas {
+    opacity: 0.4;
+    filter: blur(0.5px);
+  }
+}
+
+/* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
   .metaballs-container canvas {
-    opacity: 0.1;
+    opacity: 0.2;
     animation: none;
   }
 }
 
-/* Better visibility on dark backgrounds */
+/* Dark background compatibility */
 body {
   background: #1A1A1A;
 }
 
 .metaballs-container canvas {
   background: transparent;
+}
+
+/* Cursor enhancement */
+.metaballs-container:hover {
+  cursor: none;
+}
+
+/* Smooth transitions */
+.metaballs-container canvas {
+  transition: opacity 0.3s ease;
 }

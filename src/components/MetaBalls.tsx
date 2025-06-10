@@ -35,25 +35,6 @@ function hash31(p: number): [number, number, number] {
   return r as [number, number, number];
 }
 
-function hash33(v: [number, number, number]): [number, number, number] {
-  let p = [v[0] * 0.1031, v[1] * 0.1030, v[2] * 0.0973].map(fract);
-  const p_yxz = [p[1], p[0], p[2]];
-  const dotVal = p[0] * (p_yxz[0] + 33.33) +
-    p[1] * (p_yxz[1] + 33.33) +
-    p[2] * (p_yxz[2] + 33.33);
-  for (let i = 0; i < 3; i++) {
-    p[i] = fract(p[i] + dotVal);
-  }
-  const p_xxy = [p[0], p[0], p[1]];
-  const p_yxx = [p[1], p[0], p[0]];
-  const p_zyx = [p[2], p[1], p[0]];
-  const result: [number, number, number] = [0, 0, 0];
-  for (let i = 0; i < 3; i++) {
-    result[i] = fract((p_xxy[i] + p_yxx[i]) * p_zyx[i]);
-  }
-  return result;
-}
-
 const vertex = `#version 300 es
 precision highp float;
 in vec2 position;
@@ -75,6 +56,7 @@ uniform float iCursorBallSize;
 uniform vec3 iMetaBalls[50];
 uniform float iClumpFactor;
 uniform bool enableTransparency;
+uniform float iCursorInfluence;
 out vec4 outColor;
 
 float getMetaBallValue(vec2 c, float r, vec2 p) {
@@ -90,29 +72,55 @@ void main() {
   vec2 mouseW = (iMouse.xy - iResolution.xy * 0.5) * scale;
   
   float m1 = 0.0;
+  float cursorInfluence = 0.0;
+  
+  // Calculate metaballs with cursor influence
   for (int i = 0; i < 50; i++) {
     if (i >= iBallCount) break;
-    m1 += getMetaBallValue(iMetaBalls[i].xy, iMetaBalls[i].z, coord);
+    
+    vec2 ballPos = iMetaBalls[i].xy;
+    float ballRadius = iMetaBalls[i].z;
+    
+    // Calculate distance to cursor
+    float distToCursor = length(ballPos - mouseW);
+    float influence = exp(-distToCursor * 0.1) * iCursorInfluence;
+    
+    // Attract balls towards cursor
+    vec2 attractedPos = mix(ballPos, mouseW, influence * 0.3);
+    float attractedRadius = ballRadius * (1.0 + influence * 0.5);
+    
+    float ballValue = getMetaBallValue(attractedPos, attractedRadius, coord);
+    m1 += ballValue;
+    
+    // Add cursor influence for color mixing
+    cursorInfluence += influence * ballValue;
   }
   
+  // Cursor metaball with enhanced size based on movement
   float m2 = getMetaBallValue(mouseW, iCursorBallSize, coord);
+  
   float total = m1 + m2;
   
-  // More visible threshold
-  float threshold = 0.8;
-  float f = smoothstep(threshold - 0.1, threshold + 0.1, total);
+  // Dynamic threshold based on cursor proximity
+  float threshold = 0.6 + sin(iTime * 2.0) * 0.1;
+  float f = smoothstep(threshold - 0.2, threshold + 0.2, total);
   
   vec3 cFinal = vec3(0.0);
   if (total > 0.0) {
     float alpha1 = m1 / (total + 0.001);
     float alpha2 = m2 / (total + 0.001);
-    cFinal = iColor * alpha1 + iCursorColor * alpha2;
+    float cursorMix = cursorInfluence / (total + 0.001);
+    
+    // Enhanced color mixing with cursor influence
+    vec3 baseColor = mix(iColor, iCursorColor, cursorMix);
+    cFinal = baseColor * alpha1 + iCursorColor * alpha2;
   }
   
-  // Increase brightness
-  cFinal *= 1.5;
+  // Enhanced brightness and glow effect
+  cFinal *= 1.8;
+  cFinal += vec3(0.1, 0.05, 0.0) * f; // Warm glow
   
-  float alpha = enableTransparency ? f * 0.8 : 1.0;
+  float alpha = enableTransparency ? f * 0.9 : 1.0;
   outColor = vec4(cFinal, alpha);
 }
 `;
@@ -134,13 +142,13 @@ interface MetaBallsProps {
 const MetaBalls: React.FC<MetaBallsProps> = ({
   className = "",
   color = "#F9C416",
-  speed = 0.3,
+  speed = 0.4,
   enableMouseInteraction = true,
-  hoverSmoothness = 0.05,
-  animationSize = 30,
-  ballCount = 15,
-  clumpFactor = 1,
-  cursorBallSize = 3,
+  hoverSmoothness = 0.1,
+  animationSize = 40,
+  ballCount = 20,
+  clumpFactor = 1.2,
+  cursorBallSize = 4,
   cursorBallColor = "#FFD700",
   enableTransparency = true,
 }) => {
@@ -149,8 +157,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
-    console.log("Initializing MetaBalls...");
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const renderer = new Renderer({ 
@@ -177,8 +183,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     const [r1, g1, b1] = parseHexColor(color);
     const [r2, g2, b2] = parseHexColor(cursorBallColor);
 
-    console.log("Colors:", { color: [r1, g1, b1], cursorColor: [r2, g2, b2] });
-
     const metaBallsUniform: Vec3[] = [];
     for (let i = 0; i < 50; i++) {
       metaBallsUniform.push(new Vec3(0, 0, 0));
@@ -199,6 +203,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         iMetaBalls: { value: metaBallsUniform },
         iClumpFactor: { value: clumpFactor },
         enableTransparency: { value: enableTransparency },
+        iCursorInfluence: { value: 0.5 },
       },
     });
 
@@ -214,26 +219,40 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       baseScale: number;
       toggle: number;
       radius: number;
+      offsetX: number;
+      offsetY: number;
     }> = [];
     
+    // Distribute balls across entire screen area
     for (let i = 0; i < effectiveBallCount; i++) {
       const idx = i + 1;
       const h1 = hash31(idx);
       const st = h1[0] * (2 * Math.PI);
-      const dtFactor = 0.1 * Math.PI + h1[1] * (0.4 * Math.PI - 0.1 * Math.PI);
-      const baseScale = 8.0 + h1[1] * (15.0 - 8.0); // Increased scale
-      const h2 = hash33(h1);
-      const toggle = Math.floor(h2[0] * 2.0);
-      const radiusVal = 1.0 + h2[2] * (3.0 - 1.0); // Increased radius
-      ballParams.push({ st, dtFactor, baseScale, toggle, radius: radiusVal });
+      const dtFactor = 0.05 * Math.PI + h1[1] * (0.3 * Math.PI - 0.05 * Math.PI);
+      const baseScale = 15.0 + h1[1] * (35.0 - 15.0); // Larger scale for full coverage
+      const toggle = Math.floor(h1[2] * 2.0);
+      const radiusVal = 1.5 + h1[2] * (4.0 - 1.5);
+      
+      // Random offsets to distribute across screen
+      const offsetX = (h1[0] - 0.5) * 80; // Spread across width
+      const offsetY = (h1[1] - 0.5) * 60; // Spread across height
+      
+      ballParams.push({ 
+        st, 
+        dtFactor, 
+        baseScale, 
+        toggle, 
+        radius: radiusVal,
+        offsetX,
+        offsetY
+      });
     }
 
-    console.log("Ball params:", ballParams.slice(0, 3));
-
     const mouseBallPos = { x: 0, y: 0 };
+    const targetMousePos = { x: 0, y: 0 };
     let pointerInside = false;
-    let pointerX = 0;
-    let pointerY = 0;
+    let mouseVelocity = { x: 0, y: 0 };
+    let lastMousePos = { x: 0, y: 0 };
 
     function resize() {
       if (!container) return;
@@ -243,7 +262,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       gl.canvas.style.width = width + "px";
       gl.canvas.style.height = height + "px";
       program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, 0);
-      console.log("Canvas resized:", gl.canvas.width, gl.canvas.height);
     }
     window.addEventListener("resize", resize);
     resize();
@@ -253,72 +271,87 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       const rect = container.getBoundingClientRect();
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
-      pointerX = (px / rect.width) * gl.canvas.width;
-      pointerY = (1 - py / rect.height) * gl.canvas.height;
+      
+      const newX = (px / rect.width) * gl.canvas.width;
+      const newY = (1 - py / rect.height) * gl.canvas.height;
+      
+      // Calculate mouse velocity for dynamic cursor size
+      mouseVelocity.x = newX - lastMousePos.x;
+      mouseVelocity.y = newY - lastMousePos.y;
+      lastMousePos.x = newX;
+      lastMousePos.y = newY;
+      
+      targetMousePos.x = newX;
+      targetMousePos.y = newY;
     }
+    
     function onPointerEnter() {
       if (!enableMouseInteraction) return;
       pointerInside = true;
     }
+    
     function onPointerLeave() {
       if (!enableMouseInteraction) return;
       pointerInside = false;
     }
+    
     container.addEventListener("pointermove", onPointerMove);
     container.addEventListener("pointerenter", onPointerEnter);
     container.addEventListener("pointerleave", onPointerLeave);
 
     const startTime = performance.now();
     let animationFrameId: number;
-    let frameCount = 0;
     
     function update(t: number) {
       animationFrameId = requestAnimationFrame(update);
       const elapsed = (t - startTime) * 0.001;
       program.uniforms.iTime.value = elapsed;
 
-      // Update metaballs positions
+      // Update metaballs positions with full screen coverage
       for (let i = 0; i < effectiveBallCount; i++) {
         const p = ballParams[i];
         const dt = elapsed * speed * p.dtFactor;
         const th = p.st + dt;
-        const x = Math.cos(th);
-        const y = Math.sin(th + dt * p.toggle);
-        const posX = x * p.baseScale * clumpFactor;
-        const posY = y * p.baseScale * clumpFactor;
+        
+        // Create orbital motion with offsets for full coverage
+        const x = Math.cos(th) * p.baseScale * clumpFactor + p.offsetX;
+        const y = Math.sin(th + dt * p.toggle) * p.baseScale * clumpFactor + p.offsetY;
+        
+        // Add some variation in movement patterns
+        const variation = Math.sin(elapsed * 0.5 + i) * 5;
+        const posX = x + variation;
+        const posY = y + variation * 0.7;
+        
         metaBallsUniform[i].set(posX, posY, p.radius);
       }
 
-      // Update mouse position
-      let targetX: number, targetY: number;
-      if (pointerInside) {
-        targetX = pointerX;
-        targetY = pointerY;
-      } else {
-        const cx = gl.canvas.width * 0.5;
-        const cy = gl.canvas.height * 0.5;
-        const rx = gl.canvas.width * 0.2;
-        const ry = gl.canvas.height * 0.2;
-        targetX = cx + Math.cos(elapsed * speed * 0.5) * rx;
-        targetY = cy + Math.sin(elapsed * speed * 0.5) * ry;
-      }
-      mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
-      mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
+      // Smooth mouse following with enhanced responsiveness
+      const smoothness = pointerInside ? hoverSmoothness * 2 : hoverSmoothness;
+      mouseBallPos.x += (targetMousePos.x - mouseBallPos.x) * smoothness;
+      mouseBallPos.y += (targetMousePos.y - mouseBallPos.y) * smoothness;
+      
+      // Dynamic cursor size based on velocity
+      const velocity = Math.sqrt(mouseVelocity.x * mouseVelocity.x + mouseVelocity.y * mouseVelocity.y);
+      const dynamicSize = cursorBallSize + Math.min(velocity * 0.1, 3);
+      program.uniforms.iCursorBallSize.value = dynamicSize;
+      
+      // Enhanced cursor influence when moving
+      const influence = pointerInside ? 0.8 + Math.min(velocity * 0.01, 0.4) : 0.2;
+      program.uniforms.iCursorInfluence.value = influence;
+      
       program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
+
+      // Decay mouse velocity
+      mouseVelocity.x *= 0.9;
+      mouseVelocity.y *= 0.9;
 
       // Clear and render
       gl.clear(gl.COLOR_BUFFER_BIT);
       renderer.render({ scene, camera });
-      
-      frameCount++;
-      if (frameCount === 60) {
-        console.log("MetaBalls rendering successfully");
-      }
     }
     animationFrameId = requestAnimationFrame(update);
 
     return () => {
-      console.log("Cleaning up MetaBalls...");
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", resize);
       container.removeEventListener("pointermove", onPointerMove);
